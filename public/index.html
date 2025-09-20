@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Journal des destinations</title>
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="preload" href="/assets/app.css" as="style" />
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body class="h-full bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+    <div class="min-h-screen">
+      <header class="backdrop-blur bg-white/90 dark:bg-neutral-900/90 sticky top-0 z-50 border-b border-neutral-200/60 dark:border-neutral-800">
+        <div class="container max-w-5xl py-4 flex items-center gap-3">
+          <div class="size-9 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-500"></div>
+          <h1 class="font-semibold text-xl tracking-tight">Journal des destinations</h1>
+          <span class="ml-auto inline-flex items-center gap-2 text-sm opacity-75">
+            <button id="themeBtn" class="rounded-xl border border-neutral-200 dark:border-neutral-800 px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition" aria-label="Basculer le thème">🌞/🌚</button>
+            <button id="exportBtn" class="rounded-xl border border-neutral-200 dark:border-neutral-800 px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">Exporter</button>
+            <label class="rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 px-3 py-1.5 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition">
+              Importer JSON<input id="importInput" type="file" accept="application/json" class="sr-only" />
+            </label>
+          </span>
+        </div>
+      </header>
+
+      <main class="container max-w-5xl py-10 space-y-10">
+        <section class="prose prose-neutral dark:prose-invert max-w-none">
+          <p class="text-lg leading-relaxed">Minimal, aéré, local‑first. Écris vite, re‑lis mieux. PWA offline, timeline & stats par pays/an.</p>
+        </section>
+
+        <!-- FORM: pays distinct du lieu -->
+        <section class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-neutral-200/70 dark:ring-neutral-800 p-6">
+          <form id="entryForm" class="grid md:grid-cols-2 gap-4">
+            <input type="hidden" id="entryId" />
+
+            <div class="md:col-span-2 grid md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label for="place" class="block text-sm opacity-80 mb-1">Lieu</label>
+                <input id="place" required placeholder="Ville / village, région" class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+              </div>
+              <div>
+                <label for="country" class="block text-sm opacity-80 mb-1">Pays</label>
+                <input id="country" required placeholder="Ex: Portugal" class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+              </div>
+            </div>
+
+            <div>
+              <label for="start" class="block text-sm opacity-80 mb-1">Début</label>
+              <input id="start" type="date" required class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+            </div>
+            <div>
+              <label for="end" class="block text-sm opacity-80 mb-1">Fin</label>
+              <input id="end" type="date" required class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+            </div>
+
+            <div>
+              <label for="mood" class="block text-sm opacity-80 mb-1">Humeur</label>
+              <select id="mood" class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5">
+                <option value="">—</option>
+                <option>👌 Parfait</option>
+                <option>🙂 Bien</option>
+                <option>😐 Mitigé</option>
+                <option>😵 Difficile</option>
+              </select>
+            </div>
+            <div>
+              <label for="rating" class="block text-sm opacity-80 mb-1">Note (0‑5)</label>
+              <input id="rating" type="number" min="0" max="5" step="0.5" placeholder="4.5" class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="notes" class="block text-sm opacity-80 mb-1">Notes</label>
+              <textarea id="notes" rows="5" placeholder="Climat, logistique, gens, bouffe, anecdotes, comparaisons…" class="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-3"></textarea>
+            </div>
+
+            <div class="md:col-span-2 flex items-center gap-3 pt-2">
+              <button class="px-5 py-2.5 rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 transition" type="submit">Enregistrer</button>
+              <button id="resetBtn" class="px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition" type="button">Réinitialiser</button>
+              <div class="ml-auto flex items-center gap-2">
+                <input id="search" placeholder="Recherche… (lieu, notes, pays)" class="w-64 max-w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-4 py-2.5" />
+                <select id="sort" class="rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 px-3 py-2.5">
+                  <option value="start-desc">Récents d’abord</option>
+                  <option value="start-asc">Anciens d’abord</option>
+                  <option value="rating-desc">Meilleures notes</option>
+                  <option value="rating-asc">Moindres notes</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- LIST -->
+        <section>
+          <div id="list" class="grid gap-4 md:gap-6"></div>
+          <template id="cardTpl">
+            <article class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-neutral-200/70 dark:ring-neutral-800 p-5 flex flex-col gap-3">
+              <div class="flex items-start gap-3">
+                <div class="size-10 shrink-0 rounded-2xl bg-neutral-100 dark:bg-neutral-800 grid place-items-center text-xl">📍</div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-lg leading-tight place"></h3>
+                  <p class="text-sm opacity-70 dates"></p>
+                </div>
+                <div class="text-right">
+                  <div class="text-base font-medium rating"></div>
+                  <div class="text-sm opacity-70 mood"></div>
+                  <div class="text-xs opacity-70 country"></div>
+                </div>
+              </div>
+              <p class="notes whitespace-pre-wrap leading-relaxed"></p>
+              <div class="flex gap-2 pt-1">
+                <button class="edit px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800">Éditer</button>
+                <button class="del px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 dark:border-rose-800 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/20">Supprimer</button>
+              </div>
+            </article>
+          </template>
+        </section>
+
+        <!-- TIMELINE -->
+        <section class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-neutral-200/70 dark:ring-neutral-800 p-6">
+          <h2 class="font-semibold text-lg mb-4">Timeline</h2>
+          <div id="timeline" class="space-y-6"></div>
+        </section>
+
+        <!-- STATS PAYS / AN -->
+        <section class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-neutral-200/70 dark:ring-neutral-800 p-6">
+          <h2 class="font-semibold text-lg mb-4">Stats par pays par année</h2>
+          <div id="stats" class="space-y-4"></div>
+        </section>
+      </main>
+
+      <footer class="container max-w-5xl py-12 text-sm opacity-70">
+        <p>LocalStorage, PWA offline. <button id="forceUpdate" class="underline">Vérifier mise à jour</button></p>
+      </footer>
+    </div>
+
+    <script type="module" src="/assets/app.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+      }
+    </script>
+  </body>
+</html>

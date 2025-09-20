@@ -1,0 +1,18 @@
+{
+  "name": "journal-destinations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "serve public -p 5173 -s",
+    "build:css": "tailwindcss -c tailwind.config.js -i src/styles.css -o public/assets/app.css --minify",
+    "build:js": "esbuild src/app.js --bundle --minify --format=esm --outfile=public/assets/app.js",
+    "build": "npm run build:css && npm run build:js",
+    "clean": "rimraf public/assets && mkdir -p public/assets"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0",
+    "rimraf": "^6.0.0",
+    "serve": "^14.2.1",
+    "tailwindcss": "^3.4.13"
+  }
+}
